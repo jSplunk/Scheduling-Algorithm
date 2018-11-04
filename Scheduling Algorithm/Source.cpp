@@ -82,6 +82,6 @@ public:
 private:
 	Node* NodeDequeue(void)
 	{
-
+		Dequeue();
 	}
 };
