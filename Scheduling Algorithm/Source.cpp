@@ -4,14 +4,38 @@ class Node
 {
 public:
 	Node(int value, Node* nextptr = nullptr, Node* prevptr = nullptr, int currentpriority = 0);
-	int getVal(void);
-	Node* getNext(void);
-	Node* getPrev(void);
-	void setVal(int value);
-	void setPrev(Node* prevptr);
-	void setNext(Node* nextptr);
-	int getPriority(void);
-	void setPriority(int priority);
+	int getVal(void)
+	{
+		return value;
+	}
+	Node* getNext(void)
+	{
+		return next;
+	}
+	Node* getPrev(void)
+	{
+		return prev;
+	}
+	void setVal(int value)
+	{
+		this->value = value;
+	}
+	void setPrev(Node* prevptr)
+	{
+		this->prev = prevptr;
+	}
+	void setNext(Node* nextptr)
+	{
+		this->next = next;
+	}
+	int getPriority(void)
+	{
+		return priority;
+	}
+	void setPriority(int priority)
+	{
+		this->priority = priority;
+	}
 private:
 	Node* next;
 	Node* prev;
