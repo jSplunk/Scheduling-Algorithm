@@ -3,7 +3,13 @@
 class Node
 {
 public:
-	Node(int value, Node* nextptr = nullptr, Node* prevptr = nullptr, int currentpriority = 0);
+	Node(int value, Node* nextptr, Node* prevptr = NULL, int currentpriority = 0)
+	{
+		this->value = value;
+		next = nextptr;
+		prev = prevptr;
+		priority = currentpriority;
+	}
 	int getVal(void)
 	{
 		return value;
@@ -22,11 +28,11 @@ public:
 	}
 	void setPrev(Node* prevptr)
 	{
-		this->prev = prevptr;
+		prev = prevptr;
 	}
 	void setNext(Node* nextptr)
 	{
-		this->next = next;
+		next = nextptr;
 	}
 	int getPriority(void)
 	{
@@ -42,53 +48,151 @@ private:
 	int priority;
 	int value;
 };
-class Stack
+class Stack //Works!
 {
 public:
-	Stack(void);
-	~Stack(void);
-	void Push(int value);
-	Node* NodePop(void);
-	int Pop(void);
+	Stack(void)
+	{
+		top = 0;
+	}
+	~Stack(void)
+	{
+
+	}
+	void Push(int value)
+	{
+		Node* tmp = new Node(value, top);
+		top = tmp;
+	}
+	Node* NodePop(void)
+	{
+		Node* tmp = top;
+		if (top != nullptr)
+		{
+			top = top->getNext();
+		}
+		return tmp;
+	}
+	int Pop(void)
+	{
+		
+		Node* tmp = NodePop();
+		int ret = 0;
+		try
+		{
+			if (tmp != nullptr)
+			{
+				ret = tmp->getVal();
+				delete tmp;
+				return ret;
+			}
+			else
+			{
+				throw "Empty Stack";
+			}
+		}
+		catch (const char* m)
+		{
+			std::cout << m << std::endl;
+		}
+	}
 private:
 	Node* top;
 };
 class Queue
 {
 public:
-	Queue(void);
-	~Queue(void);
-	void Enqueue(int i, int priority = 0);
-	int Dequeue(void);
+	Queue(void)  // Constuctor of our Queue class, which takes in two integer parameters, a value of the process and a priority of the process
+	{
+		front = back = NULL; // Enqueuing the first process as the value of i, and the priority of priority
+	}
+	~Queue(void)
+	{
+		while(front != NULL) delete NodeDequeue(); // Clearing our allocated memory for the Queue back and front pointers
+	}
+	void Enqueue(int i, int priority = 0)
+	{
+		Node* tmp = new Node(i, back, nullptr, priority);
+		back = tmp;
+
+		if (front == nullptr) front = back;
+		else
+		{
+			tmp = back->getNext();
+			tmp->setPrev(back);
+			front = tmp;
+		}
+	}
+	int Dequeue(void)
+	{
+		Node* tmp = NodeDequeue();
+		int ret = 0;
+		try 
+		{
+			if (tmp != nullptr)
+			{
+				ret = tmp->getVal();
+				delete tmp;
+				return ret;
+			}
+			else
+			{
+				throw "Queue Empty";
+			}
+		}
+		catch (const char* m)
+		{
+			std::cout << m << std::endl;
+		}
+	}
 protected:
 	Node* back;
 	Node* front;
 private:
-	virtual Node* NodeDequeue(void);
+	virtual Node* NodeDequeue(void)
+	{
+		Node* tmp = front;
+
+		if (front != nullptr)
+		{
+			front = front->getNext();
+			if (front != nullptr) front->setNext(nullptr);
+		}
+		else
+		{
+			tmp = back;
+			back = front;
+		}
+		return tmp;
+	}
 };
 class Scheduler : public Queue
 {
-public:
-	Scheduler(int i, int priority = 0) // Constuctor of our Scheduler class, which takes in two integer parameters, a value of the process and a priority of the process
+private:
+	Node* NodeDequeue(void)
 	{
-		if (checkPriorityAndVal(i, priority)) // Checking if i and priority are bad values for the purpose of our implementation
-			Enqueue(i, priority); // Enqueuing the first process as the value of i, and the priority of priority
+		Node* tmp = front;
+		if (checkPriority(front->getPriority()))
+		{
+			if (front != nullptr)
+			{
+				front = front->getNext();
+				if (front != nullptr) front->setNext(nullptr);
+			}
+			else
+			{
+				tmp = back;
+				back = front;
+			}
+		}
+		return tmp;
 	}
-	~Scheduler() 
-	{
-		delete back, front; // Clearing our allocated memory for the Queue back and front pointers
-	}
-	void enqueue(int i, int priority = 0)
-	{
-		if (checkPriorityAndVal(i, priority)) // Checking if i and priority are bad values for the purpose of our implementation
-			Enqueue(i, priority); // Enqueuing a process as the value of i, and the priority of priority
-	}
-	bool checkPriorityAndVal(int i, int priority = 0) // A boolean fuctions which returns true if no exceptions were thrown
+	bool checkPriority(int priority) // A boolean fuctions which returns true if no exceptions were thrown
 	{
 		try
 		{
-			i; // Checking if i is an integer, and if it is not, then we throw an exception for our catch block
-			if (priority > 10 && priority < 0) // Checking if our priority integer is out of bounds, in our case if the value exceeds 10 and if it is lower than 0, if it is we throw an exception
+			//i; // Checking if i is an integer, and if it is not, then we throw an exception for our catch block
+			if (priority > 10 || priority < 1) // Checking if our priority integer is out of bounds, in our case if the value exceeds 10 and if it is lower than 0, if it is we throw an exception
 			{
 				throw priority; // Throws priority as the exception for our catch block
 			}
@@ -99,13 +203,21 @@ public:
 		}
 		catch (int e) // Catching an integer exception of either the value of the process or the value of the priority and displaying the value
 		{
-			std::cout << "Bad integer value " << e << std::endl; // Displaying that we catched a bad integer value to the user, and displaying that value
+			std::cout << "Out of bounds priority: " << e << std::endl; // Displaying that we catched a bad integer value to the user, and displaying that value
 			return false; // Returning false since we got an exception for our integer value
 		}
 	}
-private:
-	Node* NodeDequeue(void)
-	{
-		Dequeue();
-	}
 };
+
+int main()
+{
+	Queue q;
+	q.Enqueue(20);
+	q.Enqueue(10);
+	std::cout << q.Dequeue() << std::endl;
+	std::cout << q.Dequeue() << std::endl;
+	std::cout << q.Dequeue() << std::endl;
+
+	getchar();
+	return 0;
+}
