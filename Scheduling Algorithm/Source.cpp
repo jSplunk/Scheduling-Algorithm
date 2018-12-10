@@ -169,36 +169,61 @@ private:
 class Scheduler : public Queue
 {
 private:
+	int counter = 0;
 	Node* NodeDequeue(void)
 	{
-		Node* tmp = front;
-		if (checkPriority(front->getPriority()))
+		Node* tmp = checkPriority(front, front->getPriority());
+		
+		if (front != nullptr)
 		{
-			if (front != nullptr)
-			{
-				front = front->getNext();
-				if (front != nullptr) front->setNext(nullptr);
-			}
-			else
-			{
-				tmp = back;
-				back = front;
-			}
+			front = front->getNext();
+			if (front != nullptr) front->setNext(nullptr);
+		}
+		else
+		{
+			tmp = back;
+			back = front;
 		}
 		return tmp;
+		
 	}
-	bool checkPriority(int priority) // A boolean fuctions which returns true if no exceptions were thrown
+	Node* checkPriority(Node* a, int priority) // A boolean fuctions which returns true if no exceptions were thrown
 	{
 		try
 		{
-			//i; // Checking if i is an integer, and if it is not, then we throw an exception for our catch block
 			if (priority > 10 || priority < 1) // Checking if our priority integer is out of bounds, in our case if the value exceeds 10 and if it is lower than 0, if it is we throw an exception
 			{
-				throw priority; // Throws priority as the exception for our catch block
+				throw a->getPriority(); // Throws priority as the exception for our catch block
 			}
 			else
 			{
-				return true; // Returning that everything went well and no exceptions were thrown
+				Node* tmp = a;
+				int val = priority;
+				if (counter == 3)
+				{
+					counter = 0;
+					return tmp;
+				}
+				while (tmp->getPrev() != nullptr)
+				{
+					if (tmp->getPrev()->getPriority() < 10 || tmp->getPrev()->getPriority() > 1)
+					{
+						if (tmp->getPrev()->getPriority() > val)
+							val = tmp->getPrev()->getPriority();
+						tmp = tmp->getPrev();
+					}
+					else { throw tmp->getPriority(); }
+				}
+				tmp = a;
+				while (tmp->getPrev() != nullptr)
+				{
+					if (tmp->getPrev()->getPriority() == val)
+						counter++;
+						return tmp; // Returning that everything went well and no exceptions were thrown
+					tmp = tmp->getPrev();
+				}
+				
+				
 			}
 		}
 		catch (int e) // Catching an integer exception of either the value of the process or the value of the priority and displaying the value
@@ -211,12 +236,19 @@ private:
 
 int main()
 {
-	Queue q;
-	q.Enqueue(20);
-	q.Enqueue(10);
-	std::cout << q.Dequeue() << std::endl;
-	std::cout << q.Dequeue() << std::endl;
-	std::cout << q.Dequeue() << std::endl;
+	/*Queue s;
+	s.Enqueue(20, 1);
+	s.Enqueue(10, 2);
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;*/
+
+	Scheduler s;
+	s.Enqueue(20, 1);
+	s.Enqueue(10, 2);
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
 
 	getchar();
 	return 0;
