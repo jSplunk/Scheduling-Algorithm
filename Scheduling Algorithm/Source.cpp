@@ -102,25 +102,40 @@ private:
 class Queue
 {
 public:
-	Queue(void)  // Constuctor of our Queue class, which takes in two integer parameters, a value of the process and a priority of the process
+	Queue(void)  // Constuctor of our Queue class
 	{
-		front = back = NULL; // Enqueuing the first process as the value of i, and the priority of priority
+		front = back = nullptr; // Default values of front and back pointers are set to null
 	}
-	~Queue(void)
+	~Queue(void) // Deconstructor of our Queue class
 	{
-		while(front != NULL) delete NodeDequeue(); // Clearing our allocated memory for the Queue back and front pointers
+		while(front != nullptr) delete NodeDequeue(); // Clearing our allocated memory for the Queue nodes
 	}
-	void Enqueue(int i, int priority = 0)
+	void Enqueue(int i, int priority = 0) // Enqueue function for enqueuing items in our Queue, which takes two integer parameters, one for the value of the Node, and one for the priority of the Node
 	{
-		Node* tmp = new Node(i, back, nullptr, priority);
-		back = tmp;
-
-		if (front == nullptr) front = back;
-		else
+		Node* tmp = new Node(i, back, nullptr, priority); // Creating a new Node pointer, with 4 different parameters
+		try 
 		{
-			tmp = back->getNext();
-			tmp->setPrev(back);
-			front = tmp;
+			if (!(priority > 10 || priority < 1)) // Checking if our priority integer is out of bounds, in our case if the value exceeds 10 and if it is lower than 0, if it is we throw an exception
+			{
+				back = tmp; // Make sure the back will always be the the new entry in the queue
+
+				if (front == nullptr) front = back; // If there is no front node pointer in the Queue, then the front node is equal to the back node
+				else
+				{
+					tmp = back->getNext(); // Make the the temporary Node equal the next Node in the line, which then sets the front Node as that temporary node, which makes it represent the node infront of the current node
+					tmp->setPrev(back);
+					front = tmp;
+				}
+			}
+			else
+			{
+				throw priority; // If the priority is outside of the bounds
+			}
+		}
+		catch (int e)
+		{
+			std::cout << e << " Not a valid priority, only between 1-10" << std::endl;
+			exit(-1);
 		}
 	}
 	int Dequeue(void)
@@ -131,7 +146,7 @@ public:
 		{
 			if (tmp != nullptr)
 			{
-				ret = tmp->getVal();
+				ret = tmp->getPriority();
 				delete tmp;
 				return ret;
 			}
@@ -172,65 +187,74 @@ private:
 	int counter = 0;
 	Node* NodeDequeue(void)
 	{
-		Node* tmp = checkPriority(front, front->getPriority());
-		
-		if (front != nullptr)
+		Node* tmp = back;
+		int val = 0;
+		if (back != nullptr) val = back->getPriority();
+		if (tmp != nullptr)
 		{
-			front = front->getNext();
-			if (front != nullptr) front->setNext(nullptr);
-		}
-		else
-		{
-			tmp = back;
-			back = front;
+			tmp = nodeToDelete(tmp, val);
+
+			if (tmp != nullptr)
+			{
+				tmp = updateScheduler(tmp);
+			}
 		}
 		return tmp;
 		
 	}
-	Node* checkPriority(Node* a, int priority) // A boolean fuctions which returns true if no exceptions were thrown
+	Node* updateScheduler(Node* tmp) // A boolean fuctions which returns true if no exceptions were thrown
 	{
-		try
+		if (tmp->getPrev() != nullptr && tmp->getNext() != nullptr) {
+			tmp->getPrev()->setNext(tmp->getNext());
+			tmp->getNext()->setPrev(tmp->getPrev());
+		}
+		if (tmp->getPrev() == nullptr)
 		{
-			if (priority > 10 || priority < 1) // Checking if our priority integer is out of bounds, in our case if the value exceeds 10 and if it is lower than 0, if it is we throw an exception
-			{
-				throw a->getPriority(); // Throws priority as the exception for our catch block
+			back = tmp->getNext();
+			if (back != nullptr) {
+				back->setPrev(nullptr);
+				if (back->getNext() != nullptr) back->getNext()->setPrev(back);
+				front = back->getNext();
 			}
-			else
+
+		}
+		if (tmp->getNext() == nullptr)
+		{
+			front = tmp->getPrev();
+			if (front != nullptr)
 			{
-				Node* tmp = a;
-				int val = priority;
-				if (counter == 3)
-				{
-					counter = 0;
-					return tmp;
-				}
-				while (tmp->getPrev() != nullptr)
-				{
-					if (tmp->getPrev()->getPriority() < 10 || tmp->getPrev()->getPriority() > 1)
-					{
-						if (tmp->getPrev()->getPriority() > val)
-							val = tmp->getPrev()->getPriority();
-						tmp = tmp->getPrev();
-					}
-					else { throw tmp->getPriority(); }
-				}
-				tmp = a;
-				while (tmp->getPrev() != nullptr)
-				{
-					if (tmp->getPrev()->getPriority() == val)
-						counter++;
-						return tmp; // Returning that everything went well and no exceptions were thrown
-					tmp = tmp->getPrev();
-				}
-				
-				
+				front->setNext(nullptr);
+				if (front->getPrev() != nullptr) front->getPrev()->setNext(front);
 			}
 		}
-		catch (int e) // Catching an integer exception of either the value of the process or the value of the priority and displaying the value
+		return tmp;
+	}
+
+	Node* nodeToDelete(Node* tmp, int val)
+	{
+		while (tmp != nullptr)
 		{
-			std::cout << "Out of bounds priority: " << e << std::endl; // Displaying that we catched a bad integer value to the user, and displaying that value
-			return false; // Returning false since we got an exception for our integer value
+			if (tmp->getPriority() > val)
+				val = tmp->getPriority();
+			tmp = tmp->getNext();
 		}
+
+		tmp = back;
+		while (tmp != nullptr)
+		{
+			if (tmp->getPriority() == val && counter < 2)
+			{
+				counter++;
+				return tmp;
+			}
+			if (counter >= 2 && tmp->getPriority() != val)
+			{
+				counter = 0;
+				return tmp;
+			}
+			tmp = tmp->getNext();
+		}
+		
 	}
 };
 
@@ -245,7 +269,31 @@ int main()
 
 	Scheduler s;
 	s.Enqueue(20, 1);
-	s.Enqueue(10, 2);
+	s.Enqueue(11, 2);
+	s.Enqueue(15, 7);
+	s.Enqueue(13, 9);
+	s.Enqueue(16, 3);
+	s.Enqueue(17, 8);
+	s.Enqueue(36, 10);
+	s.Enqueue(45, 6);
+	s.Enqueue(67, 10);
+	s.Enqueue(67, 10);
+	s.Enqueue(67, 10);
+	s.Enqueue(67, 10);
+	s.Enqueue(67, 10);
+	s.Enqueue(67, 10);
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
