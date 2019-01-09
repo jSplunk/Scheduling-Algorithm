@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 class Node
 {
@@ -75,7 +76,7 @@ public:
 	}
 	int Pop(void)
 	{
-		
+
 		Node* tmp = NodePop();
 		int ret = 0;
 		try
@@ -108,12 +109,12 @@ public:
 	}
 	~Queue(void) // Deconstructor of our Queue class
 	{
-		while(front != nullptr) delete NodeDequeue(); // Clearing our allocated memory for the Queue nodes
+		while (front != nullptr) delete NodeDequeue(); // Clearing our allocated memory for the Queue nodes
 	}
 	void Enqueue(int i, int priority = 0) // Enqueue function for enqueuing items in our Queue, which takes two integer parameters, one for the value of the Node, and one for the priority of the Node
 	{
 		Node* tmp = new Node(i, back, nullptr, priority); // Creating a new Node pointer, with 4 different parameters
-		try 
+		try
 		{
 			if (!(priority > 10 || priority < 1)) // Checking if our priority integer is out of bounds, in our case if the value exceeds 10 and if it is lower than 0, if it is we throw an exception
 			{
@@ -142,7 +143,7 @@ public:
 	{
 		Node* tmp = NodeDequeue();
 		int ret = 0;
-		try 
+		try
 		{
 			if (tmp != nullptr)
 			{
@@ -185,76 +186,80 @@ class Scheduler : public Queue
 {
 private:
 	int counter = 0;
+	int val;
 	Node* NodeDequeue(void)
 	{
-		Node* tmp = back;
-		int val = 0;
-		if (back != nullptr) val = back->getPriority();
-		if (tmp != nullptr)
+		Node *tmp = front;
+		val = 0;
+		if (front != nullptr)
 		{
-			tmp = nodeToDelete(tmp, val);
+			front = nodeToDelete(front, val);
 
-			if (tmp != nullptr)
-			{
-				tmp = updateScheduler(tmp);
-			}
-		}
-		return tmp;
-		
-	}
-	Node* updateScheduler(Node* tmp) // A boolean fuctions which returns true if no exceptions were thrown
-	{
-		if (tmp->getPrev() != nullptr && tmp->getNext() != nullptr) {
-			tmp->getPrev()->setNext(tmp->getNext());
-			tmp->getNext()->setPrev(tmp->getPrev());
-		}
-		if (tmp->getPrev() == nullptr)
-		{
-			back = tmp->getNext();
-			if (back != nullptr) {
-				back->setPrev(nullptr);
-				if (back->getNext() != nullptr) back->getNext()->setPrev(back);
-				front = back->getNext();
-			}
-
-		}
-		if (tmp->getNext() == nullptr)
-		{
-			front = tmp->getPrev();
 			if (front != nullptr)
 			{
-				front->setNext(nullptr);
-				if (front->getPrev() != nullptr) front->getPrev()->setNext(front);
+				if (front->getPrev() != nullptr && front->getNext() != nullptr)
+				{
+					tmp = front;
+					front->getPrev()->setNext(front->getNext());
+					front->getNext()->setPrev(front->getPrev());
+				}
+				if (front->getPrev() == nullptr)
+				{
+					tmp = front;
+					back = front->getNext();
+					if (back != nullptr) back->setPrev(nullptr);
+				}
+				else if (front->getNext() == nullptr)
+				{
+					tmp = front;
+					front = back->getPrev();
+					if (front != nullptr) back->setNext(nullptr);
+					back = front;
+				}
+				front = back;
 			}
+		}
+		else
+		{
+			tmp = back;
+			back = front;
 		}
 		return tmp;
+
 	}
 
-	Node* nodeToDelete(Node* tmp, int val)
+	Node* nodeToDelete(Node* front, int val)
 	{
-		while (tmp != nullptr)
+		while (front != nullptr)
 		{
-			if (tmp->getPriority() > val)
-				val = tmp->getPriority();
-			tmp = tmp->getNext();
+			if (front->getPriority() > val)
+			{
+				val = front->getPriority();
+			}
+
+			front = front->getNext();
 		}
 
-		tmp = back;
-		while (tmp != nullptr)
+		front = back;
+		while (front != nullptr)
 		{
-			if (tmp->getPriority() == val && counter < 2)
+			if (front->getPriority() == val && counter < 2)
 			{
 				counter++;
-				return tmp;
+				return front;
 			}
-			if (counter >= 2 && tmp->getPriority() != val)
+			if (counter >= 2 && front->getPriority() != val)
 			{
 				counter = 0;
-				return tmp;
+				return front;
 			}
-			tmp = tmp->getNext();
+			else if (counter >= 2 && front->getPriority() == val)
+			{
+				return front;
+			}
+			front = front->getNext();
 		}
-		
+
 	}
 };
 
@@ -271,17 +276,19 @@ int main()
 	s.Enqueue(20, 1);
 	s.Enqueue(11, 2);
 	s.Enqueue(15, 7);
-	s.Enqueue(13, 9);
+	s.Enqueue(78, 10);
+	s.Enqueue(66, 10);
+	s.Enqueue(55, 10);
+	s.Enqueue(44, 10);
+	s.Enqueue(33, 10);
+	s.Enqueue(22, 10);
+	s.Enqueue(89, 10);
 	s.Enqueue(16, 3);
 	s.Enqueue(17, 8);
-	s.Enqueue(36, 10);
-	s.Enqueue(45, 6);
-	s.Enqueue(67, 10);
-	s.Enqueue(67, 10);
-	s.Enqueue(67, 10);
-	s.Enqueue(67, 10);
-	s.Enqueue(67, 10);
-	s.Enqueue(67, 10);
+	s.Enqueue(36, 9);
+
+
+	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
@@ -295,8 +302,10 @@ int main()
 	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
-	std::cout << s.Dequeue() << std::endl;
-	std::cout << s.Dequeue() << std::endl;
+	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+	std::cout << "Time difference in ms = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
+
 
 	getchar();
 	return 0;
