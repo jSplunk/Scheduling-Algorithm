@@ -212,9 +212,8 @@ private:
 				else if (front->getNext() == nullptr)
 				{
 					tmp = front;
-					front = back->getPrev();
-					if (front != nullptr) back->setNext(nullptr);
-					back = front;
+					front = front->getPrev();
+					if (front != nullptr) front->setNext(nullptr);
 				}
 				front = back;
 			}
@@ -232,15 +231,46 @@ private:
 	{
 		while (front != nullptr)
 		{
-			if (front->getPriority() > val)
+			if (counter < 2)
+			{
+				if (front->getPriority() > val)
+				{
+					val = front->getPriority();
+				}
+			}
+			else
 			{
 				val = front->getPriority();
 			}
-
+			if (front->getNext() == nullptr) break;
 			front = front->getNext();
+
 		}
 
-		front = back;
+
+		while (front != nullptr)
+		{
+
+			if (counter < 2 && front->getPriority() == val)
+			{
+				counter++;
+				return front;
+			}
+			if (counter >= 2 && front->getPriority() == val)
+			{
+				counter = 0;
+				return front;
+			}
+			/*else if (counter >= 2 && front->getPriority() != val)
+			{
+				counter = 0;
+				return front;
+			}*/
+			front = front->getPrev();
+		}
+
+
+		/*front = back;
 		while (front != nullptr)
 		{
 			if (front->getPriority() == val && counter < 2)
@@ -248,17 +278,18 @@ private:
 				counter++;
 				return front;
 			}
-			if (counter >= 2 && front->getPriority() != val)
+			if (counter >= 2 && front->getPriority() == val)
+			{
+				return front;
+			}
+			else if (counter >= 2 && front->getPriority() != val)
 			{
 				counter = 0;
 				return front;
 			}
-			else if (counter >= 2 && front->getPriority() == val)
-			{
-				return front;
-			}
+
 			front = front->getNext();
-		}
+		}*/
 
 	}
 };
@@ -273,8 +304,14 @@ int main()
 	std::cout << s.Dequeue() << std::endl;*/
 
 	Scheduler s;
-	s.Enqueue(20, 1);
+	s.Enqueue(20, 2);
+	s.Enqueue(20, 7);
+	s.Enqueue(20, 5);
+	s.Enqueue(11, 1);
 	s.Enqueue(11, 2);
+	s.Enqueue(11, 6);
+	s.Enqueue(15, 9);
+	s.Enqueue(15, 8);
 	s.Enqueue(15, 7);
 	s.Enqueue(78, 10);
 	s.Enqueue(66, 10);
@@ -289,6 +326,12 @@ int main()
 
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
+	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
 	std::cout << s.Dequeue() << std::endl;
