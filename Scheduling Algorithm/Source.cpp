@@ -114,7 +114,7 @@ public:
 	void Enqueue(int i, int priority = 0) // Enqueue function for enqueuing items in our Queue, which takes two integer parameters, one for the value of the Node, and one for the priority of the Node
 	{
 		Node* tmp = new Node(i, back, nullptr, priority); // Creating a new Node pointer, with 4 different parameters
-		try
+		try // A trya dn catch block to see if the following code throws any exceptions
 		{
 			if (!(priority > 10 || priority < 1)) // Checking if our priority integer is out of bounds, in our case if the value exceeds 10 and if it is lower than 0, if it is we throw an exception
 			{
@@ -123,9 +123,9 @@ public:
 				if (front == nullptr) front = back; // If there is no front node pointer in the Queue, then the front node is equal to the back node
 				else
 				{
-					tmp = back->getNext(); // Make the the temporary Node equal the next Node in the line, which then sets the front Node as that temporary node, which makes it represent the node infront of the current node
-					tmp->setPrev(back);
-					front = tmp;
+					tmp = back->getNext(); //Seting a temporary Node to the new front element in the Queue 
+					tmp->setPrev(back); //Set the temporary front Node's pointer to the back of the Queue
+					front = tmp; //Set the front Node to equal the temporary front Node
 				}
 			}
 			else
@@ -133,23 +133,23 @@ public:
 				throw priority; // If the priority is outside of the bounds
 			}
 		}
-		catch (int e)
+		catch (int e) // Catches the exception that was thrown when priority is out of bounds
 		{
-			std::cout << e << " Not a valid priority, only between 1-10" << std::endl;
+			std::cout << e << " Not a valid priority, only between 1-10" << std::endl; // Printing a message out to the screen, informing about an unvalid priority that the user entered
 			exit(-1);
 		}
 	}
-	int Dequeue(void)
+	int Dequeue(void) // Dequeuing function with 0 arguments that returns the value of the deleted node
 	{
-		Node* tmp = NodeDequeue();
-		int ret = 0;
-		try
+		Node* tmp = NodeDequeue(); // Sets a temporary Node to be the Node we delete from the Queue
+		int ret = 0; //Initianlizing a variable to store the priority value of the Node we are deleting
+		try //A try and catch block which tries to delete the pointer which has been choosen, and return the value
 		{
-			if (tmp != nullptr)
+			if (tmp != nullptr) // As long as the Node we are deleting isn't a null pointer
 			{
-				ret = tmp->getPriority();
-				delete tmp;
-				return ret;
+				ret = tmp->getPriority(); // Store the priority in our previously made variable
+				delete tmp; // Delete the Node we are deleting
+				return ret; // Return the value of the priority we stored
 			}
 			else
 			{
