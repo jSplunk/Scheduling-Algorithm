@@ -1,5 +1,6 @@
 #include <iostream>
-//#include <chrono>
+#include <chrono>
+#include <time.h>
 
 class Node // Node class serving as Nodes for our Stack, Queue and Scheduler
 {
@@ -62,7 +63,6 @@ public:
 	{
 		Node* tmp = new Node(value, top); // Creating a temporary Node to store the next Node in the stack
 		top = tmp; // Assigning that new node to the top Node pointer
-		delete tmp; // Deleting the temporary Node
 	}
 	Node* NodePop(void) // NodePop function, it returns the first Node item in the stack
 	{
@@ -110,7 +110,7 @@ public:
 	{
 		while (front != nullptr) delete NodeDequeue(); // Clearing our allocated memory for the Queue nodes
 	}
-	void Enqueue(int i, int priority = 0) // Enqueue function for enqueuing items in our Queue, which takes two integer parameters, one for the value of the Node, and one for the priority of the Node
+	int Enqueue(int i, int priority = 0) // Enqueue function for enqueuing items in our Queue, which takes two integer parameters, one for the value of the Node, and one for the priority of the Node
 	{
 		Node* tmp = new Node(i, back, nullptr, priority); // Creating a new Node pointer, with 4 different parameters
 		try // A try and catch block to see if the following code throws any exceptions
@@ -126,6 +126,7 @@ public:
 					tmp->setPrev(back); //Set the temporary front Node's pointer to the back of the Queue
 					//front = tmp; //Set the front Node to equal the temporary front Node
 				}
+				return priority;
 			}
 			else
 			{
@@ -146,7 +147,7 @@ public:
 		{
 			if (tmp != nullptr) // As long as the Node we are deleting isn't a null pointer
 			{
-				ret = tmp->getPriority(); // Store the priority in our previously made variable
+				ret = tmp->getVal(); // Store the priority in our previously made variable
 				delete tmp; // Delete the Node we are deleting
 				return ret; // Return the value of the priority we stored
 			}
@@ -261,40 +262,57 @@ private:
 	}
 };
 
-//int main()
-//{
-//	Queue s;
-//	s.Enqueue(20, 1);
-//	s.Enqueue(10, 8);
-//	s.Enqueue(19, 5);
-//	s.Enqueue(9, 3);
-//	s.Enqueue(9, 4);
-//	std::cout << s.Dequeue() << std::endl;
-//	std::cout << s.Dequeue() << std::endl;
-//	std::cout << s.Dequeue() << std::endl;
-//	std::cout << s.Dequeue() << std::endl;
-//	std::cout << s.Dequeue() << std::endl;
-//
-//	Scheduler s;
-//	int m = (rand() % 10) + 1;
-//	int r = (rand() % 500) + 1;
-//	for (int i = 0; i < 500; i++)
-//	{
-//		s.Enqueue(r, m);
-//		r = (rand() % 500) + 1;
-//		m = (rand() % 10) + 1;
-//	}
-//
-//	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-//	for (int i = 0; i < 500; i++)
-//	{
-//		std::cout << s.Dequeue() << std::endl;
-//	}
-//	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-//
-//	std::cout << "Time difference in ms = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
-//
-//
-//	getchar();
-//	return 0;
-//}
+int main()
+{
+
+	Stack s;
+	s.Push(10);
+	s.Push(9);
+	s.Push(8);
+	s.Push(7);
+	s.Push(6);
+	s.Push(5);
+
+	s.Pop();
+	s.Pop();
+	s.Pop();
+	s.Pop();
+	s.Pop();
+	s.Pop();
+	//srand(static_cast<unsigned int>(time(0)));
+	//const unsigned int MAX_ITEMS = 1000;
+	//const unsigned int MAX_PRIORITY = 10;
+	//Scheduler s;
+	//int m = (rand() % MAX_PRIORITY) + 1;
+	//int r = (rand() % MAX_ITEMS) + 1;
+	//std::chrono::steady_clock::time_point begin1 = std::chrono::steady_clock::now();
+	//for (int i = 0; i < MAX_ITEMS; i++)
+	//{
+	//	std::cout << s.Enqueue(r, m) << ", ";
+	//	r = (rand() % MAX_ITEMS) + 1;
+	//	m = (rand() % MAX_PRIORITY) + 1;
+	//}
+	//std::chrono::steady_clock::time_point end1 = std::chrono::steady_clock::now();
+
+	//std::cout << std::endl;
+
+	//std::cout << "Enqueuing: Time difference in microseconds = " << std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count() << std::endl;
+
+	//std::cout << std::endl;
+
+	//std::chrono::steady_clock::time_point begin2 = std::chrono::steady_clock::now();
+	//for (int i = 0; i < MAX_ITEMS; i++)
+	//{
+	//	std::cout << s.Dequeue() << ", ";
+	//}
+	//std::chrono::steady_clock::time_point end2 = std::chrono::steady_clock::now();
+
+	//std::cout << std::endl;
+
+	////std::cout << "Enqueuing: Time difference in microseconds = " << std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count() << std::endl;
+	//std::cout << "Dequeuing: Time difference in milliseconds = " << std::chrono::duration_cast<std::chrono::milliseconds>(end2 - begin2).count() << std::endl;
+
+
+	getchar();
+	return 0;
+}
