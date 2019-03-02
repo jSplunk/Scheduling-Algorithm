@@ -265,52 +265,54 @@ private:
 int main()
 {
 
-	Stack s;
-	s.Push(10);
-	s.Push(9);
-	s.Push(8);
-	s.Push(7);
-	s.Push(6);
-	s.Push(5);
+	Stack st;
+	st.Push(10);
+	st.Push(9);
+	st.Push(8);
+	st.Push(7);
+	st.Push(6);
+	st.Push(5);
 
-	s.Pop();
-	s.Pop();
-	s.Pop();
-	s.Pop();
-	s.Pop();
-	s.Pop();
-	//srand(static_cast<unsigned int>(time(0)));
-	//const unsigned int MAX_ITEMS = 1000;
-	//const unsigned int MAX_PRIORITY = 10;
-	//Scheduler s;
-	//int m = (rand() % MAX_PRIORITY) + 1;
-	//int r = (rand() % MAX_ITEMS) + 1;
-	//std::chrono::steady_clock::time_point begin1 = std::chrono::steady_clock::now();
-	//for (int i = 0; i < MAX_ITEMS; i++)
-	//{
-	//	std::cout << s.Enqueue(r, m) << ", ";
-	//	r = (rand() % MAX_ITEMS) + 1;
-	//	m = (rand() % MAX_PRIORITY) + 1;
-	//}
-	//std::chrono::steady_clock::time_point end1 = std::chrono::steady_clock::now();
+	st.Pop();
+	st.Pop();
+	st.Pop();
+	st.Pop();
+	st.Pop();
+	st.Pop();
 
-	//std::cout << std::endl;
+
+	srand(static_cast<unsigned int>(time(0)));
+	const unsigned int MAX_ITEMS = 1000;
+	const unsigned int MAX_PRIORITY = 10;
+	Scheduler s;
+	int m = (rand() % MAX_PRIORITY) + 1;
+	int r = (rand() % MAX_ITEMS) + 1;
+	std::chrono::steady_clock::time_point begin1 = std::chrono::steady_clock::now();
+	for (int i = 0; i < MAX_ITEMS; i++)
+	{
+		std::cout << s.Enqueue(r, m) << ", ";
+		r = (rand() % MAX_ITEMS) + 1;
+		m = (rand() % MAX_PRIORITY) + 1;
+	}
+	std::chrono::steady_clock::time_point end1 = std::chrono::steady_clock::now();
+
+	std::cout << std::endl;
+
+	std::cout << "Enqueuing: Time difference in microseconds = " << std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count() << std::endl;
+
+	std::cout << std::endl;
+
+	std::chrono::steady_clock::time_point begin2 = std::chrono::steady_clock::now();
+	for (int i = 0; i < MAX_ITEMS; i++)
+	{
+		std::cout << s.Dequeue() << ", ";
+	}
+	std::chrono::steady_clock::time_point end2 = std::chrono::steady_clock::now();
+
+	std::cout << std::endl;
 
 	//std::cout << "Enqueuing: Time difference in microseconds = " << std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count() << std::endl;
-
-	//std::cout << std::endl;
-
-	//std::chrono::steady_clock::time_point begin2 = std::chrono::steady_clock::now();
-	//for (int i = 0; i < MAX_ITEMS; i++)
-	//{
-	//	std::cout << s.Dequeue() << ", ";
-	//}
-	//std::chrono::steady_clock::time_point end2 = std::chrono::steady_clock::now();
-
-	//std::cout << std::endl;
-
-	////std::cout << "Enqueuing: Time difference in microseconds = " << std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count() << std::endl;
-	//std::cout << "Dequeuing: Time difference in milliseconds = " << std::chrono::duration_cast<std::chrono::milliseconds>(end2 - begin2).count() << std::endl;
+	std::cout << "Dequeuing: Time difference in milliseconds = " << std::chrono::duration_cast<std::chrono::milliseconds>(end2 - begin2).count() << std::endl;
 
 
 	getchar();
